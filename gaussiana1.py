@@ -76,12 +76,25 @@ while(c<nFrag):
     dados.write('\n' + str(popt[0]) + '(+/-) ' + str(perr[0]) + str(popt[1]) + '(+/-) ' + str(perr[1]) +'       '
                                                    + str(popt[2]) + '(+/-) ' + str(perr[2]) + '\n')
 
-    fig = plt.figure(figsize=(4,3))
-    gs = gridspec.GridSpec(1,1)
+    fig = plt.figure(figsize=(4, 3))
+    gs = gridspec.GridSpec(1, 1)
     ax1 = fig.add_subplot(gs[0])
     ax1.plot(xp, yp, "ro")
     ax1.plot(xp, gaussiana1(xp, *popt), 'k--')
+    ax1.set_xlim(istart[c], istop[c])
+    ax1.set_ylim(0, 1000)
+    ax1.set_xlabel("x_array", family="serif", fontsize=12)
+    ax1.set_ylabel("y_array", family="serif", fontsize=12)
+    ax1.legend(loc="best")
+    ax1.xaxis.set_major_locator(ticker.MultipleLocator(20))
+    ax1.xaxis.set_minor_locator(AutoMinorLocator(2))
+    ax1.yaxis.set_minor_locator(AutoMinorLocator(2))
+    ax1.tick_params(axis='both', which='major', direction="out", top="on", right="on", bottom="on", length=8,
+                    labelsize=8)
+    ax1.tick_params(axis='both', which='minor', direction="out", top="on", right="on", bottom="on", length=5,
+                    labelsize=8)
+    fig.tight_layout()
     fig.savefig("fitgau.png", format="png", dpi=1000)
-    c +=1.
+    c +=1
 
 dados.close()
