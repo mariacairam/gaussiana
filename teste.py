@@ -27,6 +27,7 @@ i = istart[0]
 while (i <= istop[0]):
     y_array.write('' + str(icounts[i]) + '\n')
     i += 1
+y_array.close()
 xp = np.linspace(istart[0], istop[0], (istop[0] - istart[0] + 1))
 yp = np.loadtxt("y_array.txt")
 print(yp)
