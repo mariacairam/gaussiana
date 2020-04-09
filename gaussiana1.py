@@ -66,7 +66,7 @@ while(c<nFrag):
     # suposto e que o sigma é dois.
     #dados.write(''+str(amp)+'      '+str(cen)+'     '+str(sigma)+'\n')
     def gaussiana1(x, amp, cen, sigma):
-        return amp * (1 / (sigma * (np.sqrt(2 * np.pi)))) * (np.exp((-1.0 / 2.0) * (((xp - cen) / sigma) ** 2)))
+        return amp*(1/(sigma*(np.sqrt(2*np.pi))))*(np.exp((-1.0/2.0)*(((xp-cen)/sigma)**2)))
 
     popt, pcov = scipy.optimize.curve_fit(gaussiana1, xp, yp, p0=[amp, cen, sigma])
     perr = np.sqrt(np.diag(pcov))
@@ -80,7 +80,7 @@ while(c<nFrag):
 
     xpfit= np.linspace(istart[c], istop[c], 50)
     def gaussiana1fit(x, amp, cen, sigma):
-        return amp * (1 / (sigma * (np.sqrt(2 * np.pi)))) * (np.exp((-1.0 / 2.0) * (((xpfit - cen) / sigma) ** 2)))
+        return amp*(1/(sigma*(np.sqrt(2*np.pi))))*(np.exp((-1.0/2.0)*(((xpfit-cen)/sigma)**2)))
 
     fig = plt.figure(figsize=(4, 3))
     gs = gridspec.GridSpec(1, 1)
