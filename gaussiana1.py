@@ -43,14 +43,14 @@ while(c<nFrag):
     i = istart[c]
     while (i <= istop[c]):
         y_array.write('' + str(icounts[i]) + '\n')
-        print(icounts[i])
         i += 1
     y_array.close()
     xp = np.linspace(istart[c], istop[c], (istop[c] - istart[c] + 1))
     yp = np.loadtxt("y_array.txt")
     open('y_array.txt', 'w')
     dados.write('xp e yp pico '+str(c+1)+'\n')
-    dados.write(''+str(xp)+'     '+str(yp)+'\n')
+    dados.write(''+str(xp)+'\n'+str(yp)+'\n')
+
     fig = plt.figure(figsize=(4,3))
     gs = gridspec.GridSpec(1,1)
     ax1 = fig.add_subplot(gs[0])
@@ -64,37 +64,33 @@ while(c<nFrag):
     sigma= 2
     # estou supondo que o meu centro é a média entre istart e istop, que minha amplitude é o meu icounts no meu centro
     # suposto e que o sigma é dois.
-    dados.write(''+str(amp)+'      '+str(cen)+'     '+str(sigma)+'\n')
+    #dados.write(''+str(amp)+'      '+str(cen)+'     '+str(sigma)+'\n')
     def gaussiana1(x, amp, cen, sigma):
         return amp * (1 / (sigma * (np.sqrt(2 * np.pi)))) * (np.exp((-1.0 / 2.0) * (((xp - cen) / sigma) ** 2)))
+
     popt, pcov = scipy.optimize.curve_fit(gaussiana1, xp, yp, p0=[amp, cen, sigma])
     perr = np.sqrt(np.diag(pcov))
     print("amplitude = %0.2f (+/-) %0.2f" % (popt[0], perr[0]))
     print("center = %0.2f (+/-) %0.2f" % (popt[1], perr[1]))
     print("sigma = %0.2f (+/-) %0.2f\n\n" % (popt[2], perr[2]))
-    dados.write('\nAplitude, centro e sigma do ajuste pico'+str(c+1))
-    dados.write('\n' + str(popt[0]) + '(+/-) ' + str(perr[0]) + str(popt[1]) + '(+/-) ' + str(perr[1]) +'       '
-                                                   + str(popt[2]) + '(+/-) ' + str(perr[2]) + '\n')
+    dados.write('\nAjustes pico'+str(c+1))
+    dados.write('\nAplitude pico '+str(c+1) +': ' +str(popt[0]) +' (+/-) ' +str(perr[0]) +
+                '\nCentro pico ' +str(c+1) +':   ' + str(popt[1]) +' (+/-) ' + str(perr[1])+
+                '\nSigma pico ' +str(c+1) +':    ' +str(popt[2]) +' (+/-) ' + str(perr[2]) + '\n\n')
+
+    xpfit= np.linspace(istart[c], istop[c], 50)
+    def gaussiana1fit(x, amp, cen, sigma):
+        return amp * (1 / (sigma * (np.sqrt(2 * np.pi)))) * (np.exp((-1.0 / 2.0) * (((xpfit - cen) / sigma) ** 2)))
 
     fig = plt.figure(figsize=(4, 3))
     gs = gridspec.GridSpec(1, 1)
     ax1 = fig.add_subplot(gs[0])
     ax1.plot(xp, yp, "ro")
-    ax1.plot(xp, gaussiana1(xp, *popt), 'k--')
-    ax1.set_xlim(istart[c], istop[c])
-    ax1.set_ylim(0, 1000)
-    ax1.set_xlabel("x_array", family="serif", fontsize=12)
-    ax1.set_ylabel("y_array", family="serif", fontsize=12)
-    ax1.legend(loc="best")
-    ax1.xaxis.set_major_locator(ticker.MultipleLocator(20))
-    ax1.xaxis.set_minor_locator(AutoMinorLocator(2))
-    ax1.yaxis.set_minor_locator(AutoMinorLocator(2))
-    ax1.tick_params(axis='both', which='major', direction="out", top="on", right="on", bottom="on", length=8,
-                    labelsize=8)
-    ax1.tick_params(axis='both', which='minor', direction="out", top="on", right="on", bottom="on", length=5,
-                    labelsize=8)
-    fig.tight_layout()
-    fig.savefig("fitgau.png", format="png", dpi=1000)
+    ax1.plot(xpfit, gaussiana1fit(xpfit, *popt), 'k--')
+    ax1.set_xlabel("x: tvoo", family="serif", fontsize=12)
+    ax1.set_ylabel("y: icounts", family="serif", fontsize=12)
+    fig.savefig("fitgaunovo.png", format="png", dpi=1000)
+
     c +=1
 
 dados.close()
