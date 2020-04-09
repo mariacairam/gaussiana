@@ -36,6 +36,7 @@ print (nFrag)
 c= 0
 while(c<nFrag):
     y_array = open('y_array.txt', 'w')
+    y_array.truncate(0)
     istart = istart.astype(int)
     istop = istop.astype(int)
     # estou transformando os elementos dos arrays e inteiros para poder utilizar no icounts[i]
@@ -44,10 +45,10 @@ while(c<nFrag):
         y_array.write('' + str(icounts[i]) + '\n')
         print(icounts[i])
         i += 1
+    y_array.close()
     xp = np.linspace(istart[c], istop[c], (istop[c] - istart[c] + 1))
     yp = np.loadtxt("y_array.txt")
-    y_array.truncate(0)
-    y_array.close()
+    open('y_array.txt', 'w')
     dados.write('xp e yp pico '+str(c+1)+'\n')
     dados.write(''+str(xp)+'     '+str(yp)+'\n')
     fig = plt.figure(figsize=(4,3))
