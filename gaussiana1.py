@@ -47,7 +47,6 @@ while(c<nFrag):
     y_array.close()
     xp = np.linspace(istart[c], istop[c], (istop[c] - istart[c] + 1))
     yp = np.loadtxt("y_array.txt")
-    open('y_array.txt', 'w')
     dados.write('xp e yp pico '+str(c+1)+'\n')
     dados.write(''+str(xp)+'\n'+str(yp)+'\n')
 
