@@ -45,9 +45,12 @@ ax1.plot(mq[picos], yp[picos], "x")
 fig.savefig("gau2.png", format="png", dpi=1000)
 
 
-
-sigma1 = 0.02
-sigma2 = 0.04
+fwhm_rel, h_eval, left_ips, right_ips = scipy.signal.peak_widths(yp, picos, rel_height=0.5)
+esq = left_ips.astype(int)
+dire = right_ips.astype(int)
+sigma = (mq[dire] - mq[esq]) / 2 * np.sqrt(2 * np.log(2))
+sigma1 = sigma[0]
+sigma2 = sigma[1]
 cen1 = mq[picos[0]]
 amp1 = yp[picos[0]]
 cen2 = mq[picos[1]]
@@ -57,9 +60,12 @@ print(cen1)
 print(amp1)
 print(cen2)
 print(amp2)
+print(sigma1)
+print(sigma2)
+
 popt2, pcov2 = scipy.optimize.curve_fit(gaussiana2, mq, yp, p0=[amp1, cen1, sigma1, amp2, cen2, sigma2])
 perr = np.sqrt(np.diag(pcov2))
-print(popt2)
+
 print("amplitude1 = %0.2f (+/-) %0.2f" % (popt2[0] / (popt2[2] * (np.sqrt(2 * np.pi))), perr[0]))
 print("center1 = %0.2f (+/-) %0.8f" % (popt2[1], perr[1]))
 print("sigma1 = %0.2f (+/-) %0.8f\n\n" % (popt2[2], perr[2]))
