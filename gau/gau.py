@@ -6,9 +6,9 @@ from scipy.optimize import curve_fit
 dados = open('dadosfit.log', 'w')
 y_array = open('y_array.txt', 'w')
 
-MQ = "mq3.txt"
+MQ = "MassWave.txt"
 mq = np.loadtxt(MQ)
-print(mq)
+#print(mq)
 i = 0
 with open(MQ, 'r') as f:
     for line in f:
@@ -33,9 +33,15 @@ yp = np.loadtxt("y_array.txt")
 # dados.write('' + str(mq) + '\n' + str(yp) + '\n')
 
 picos, _ = scipy.signal.find_peaks(yp, height=100, threshold=None, distance=10)
+
 print(picos)
 print(mq[picos])
 print(yp[picos])
+picos = np.delete(picos, [5, 7, 12, 20])
+print(picos)
+print(mq[picos])
+print(yp[picos])
+
 fig = plt.figure(figsize=(4, 3))
 plt.title('Picos Espectro')
 plt.plot(mq, yp)
@@ -78,7 +84,6 @@ dados.write('Numero de picos: ' + str(len(picos)) + '\n')
 i = 0
 c = 0
 area = np.zeros(len(picos))
-
 areatot = 0
 while c < (3 * len(picos)) and i < len(picos):
     pico_gauss = gaussiana1(mq, popt2[c], popt2[c + 1], popt2[c + 2])
