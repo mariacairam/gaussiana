@@ -6,7 +6,7 @@ from scipy.optimize import curve_fit
 dados = open('dadosfit.log', 'w')
 y_array = open('y_array.txt', 'w')
 
-MQ = "MassWave300.txt"
+MQ = "MassWave.txt"
 mq = np.loadtxt(MQ)
 #print(mq)
 i = 0
