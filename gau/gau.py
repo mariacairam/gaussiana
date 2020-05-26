@@ -6,7 +6,7 @@ from scipy.optimize import curve_fit
 dados = open('dadosfit.log', 'w')
 y_array = open('y_array.txt', 'w')
 
-MQ = "MassWave.txt"
+MQ = "MassWave300.txt"
 mq = np.loadtxt(MQ)
 #print(mq)
 i = 0
@@ -29,15 +29,17 @@ for i in range(12, nLinhas + 12, 1):
     y_array.write('' + str(icounts[i]) + '\n')
 y_array.close()
 yp = np.loadtxt("y_array.txt")
-# dados.write('xp e yp pico \n')
-# dados.write('' + str(mq) + '\n' + str(yp) + '\n')
+#dados.write('xp e yp pico \n')
+#dados.write('' + str(mq) + '\n' + str(yp) + '\n')
 
-picos, _ = scipy.signal.find_peaks(yp, height=100, threshold=None, distance=10)
 
-print(picos)
-print(mq[picos])
-print(yp[picos])
-picos = np.delete(picos, [5, 7, 12, 20])
+picos, _ = scipy.signal.find_peaks(yp, height=100, threshold=None, distance=10, width=1.5)
+
+
+#print(picos)
+#print(mq[picos])
+#print(yp[picos])
+picos = np.delete(picos, [10])
 print(picos)
 print(mq[picos])
 print(yp[picos])
@@ -78,7 +80,7 @@ print(chute)
 popt2, pcov2 = scipy.optimize.curve_fit(gaussiana2, mq, yp, p0=chute)
 perr = np.sqrt(np.diag(pcov2))
 
-dados.write('\nAjustes picos:\n')
+dados.write('Ajustes picos\n')
 dados.write('Numero de picos: ' + str(len(picos)) + '\n')
 
 i = 0
