@@ -50,7 +50,7 @@ bb = bb / 41
 bcoef = (bb - aa) / (ix2 - ix1)
 acoef = aa - bcoef * ix1
 
-popt_linear, pcov_linear = scipy.optimize.curve_fit(linear, mq, yp, p0=[acoef, bcoef])
+popt_linear, pcov_linear = scipy.optimize.curve_fit(linear, mq, yp, p0=[bcoef, acoef])
 
 fig = plt.figure(figsize=(4, 3))
 plt.plot(mq, yp)
