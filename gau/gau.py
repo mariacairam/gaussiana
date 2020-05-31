@@ -89,7 +89,7 @@ area = np.zeros(len(picos))
 areatot = 0
 while c < (3 * len(picos)) and i < len(picos):
     pico_gauss = gaussiana1(mq, popt2[c], popt2[c + 1], popt2[c + 2])
-    area[i] = np.trapz(pico_gauss, x=mq, dx=0.001)
+    area[i] = np.trapz(pico_gauss, x=mq, dx=0.001, axis=0)
     areatot = areatot + area[i]
     dados.write('\nPico de m/q experimental = ' + str(mq[picos[i]]) +
                 '\nArea:      ' + str(area[i]) +
@@ -114,5 +114,6 @@ plt.tick_params(axis='both', which='major', direction="out", top="on", right="on
 plt.tick_params(axis='both', which='minor', direction="out", top="on", right="on", bottom="on", length=5, labelsize=8)
 fig.tight_layout()
 fig.savefig("fitgau.png", format="png", dpi=1000)
+plt.show()
 
 dados.close()
