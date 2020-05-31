@@ -8,7 +8,7 @@ y_array = open('y_array.txt', 'w')
 
 MQ = "MassWave.txt"
 mq = np.loadtxt(MQ)
-#print(mq)
+# print(mq)
 i = 0
 with open(MQ, 'r') as f:
     for line in f:
@@ -29,8 +29,7 @@ for i in range(12, nLinhas + 12, 1):
     y_array.write('' + str(icounts[i]) + '\n')
 y_array.close()
 yp = np.loadtxt("y_array.txt")
-#dados.write('xp e yp pico \n')
-#dados.write('' + str(mq) + '\n' + str(yp) + '\n')
+
 
 def linear(x, a, b):
     return a * x + b
@@ -40,31 +39,39 @@ aa = 0
 bb = 0
 ix1 = 109
 ix2 = nLinhas - 109
-for i in range(1, 42, 1):
+for i in range(0, 41, 1):
     aa = aa + yp[109 + i]
     bb = bb + yp[nLinhas - 109 - i]
-
 aa = aa / 41
 bb = bb / 41
+
+mqlin = np.zeros(82)
+yplin = np.zeros(82)
+for i in range(0, 41, 1):
+    mqlin[i] = mq[109 + i]
+    mqlin[81 - i] = mq[nLinhas - 109 - i]
+    yplin[i] = yp[109 + i]
+    yplin[81 - i] = yp[nLinhas - 109 - i]
+print(yplin)
 
 bcoef = (bb - aa) / (ix2 - ix1)
 acoef = aa - bcoef * ix1
 
-popt_linear, pcov_linear = scipy.optimize.curve_fit(linear, mq, yp, p0=[bcoef, acoef])
+popt_linear, pcov_linear = scipy.optimize.curve_fit(linear, mqlin, yplin, p0=[bcoef, acoef])
 
 fig = plt.figure(figsize=(4, 3))
 plt.plot(mq, yp)
 plt.plot(mq, linear(mq, *popt_linear), 'k--')
 plt.show()
 
+base = linear(mq, *popt_linear)
+yp = yp - base
+yp = scipy.signal.savgol_filter(yp, 11, 2)
 
-picos, _ = scipy.signal.find_peaks(yp, height=100, threshold=None, distance=10, width=1.5)
 
+picos, _ = scipy.signal.find_peaks(yp, height=100-base, threshold=None, distance=10, width=1.5)
 
-#print(picos)
-#print(mq[picos])
-#print(yp[picos])
-picos = np.delete(picos, [10])
+picos = np.delete(picos, [10, 23])
 print(picos)
 print(mq[picos])
 print(yp[picos])
@@ -114,7 +121,7 @@ area = np.zeros(len(picos))
 areatot = 0
 while c < (3 * len(picos)) and i < len(picos):
     pico_gauss = gaussiana1(mq, popt2[c], popt2[c + 1], popt2[c + 2])
-    area[i] = np.trapz(pico_gauss, x=mq, dx=0.001)
+    area[i] = np.trapz(pico_gauss, x=mq, dx=0.001, axis=0)
     areatot = areatot + area[i]
     dados.write('\nPico de m/q experimental = ' + str(mq[picos[i]]) +
                 '\nArea:      ' + str(area[i]) +
@@ -139,5 +146,6 @@ plt.tick_params(axis='both', which='major', direction="out", top="on", right="on
 plt.tick_params(axis='both', which='minor', direction="out", top="on", right="on", bottom="on", length=5, labelsize=8)
 fig.tight_layout()
 fig.savefig("fitgau.png", format="png", dpi=1000)
+plt.show()
 
 dados.close()
