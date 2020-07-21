@@ -19,7 +19,7 @@ print(nLinhas)
 
 TT = "Table_TOF.txt"
 icounts = np.loadtxt(TT)
-print(icounts[12])
+
 
 PA = "parametros.txt"
 par = open(PA, "r")
@@ -43,7 +43,7 @@ for i in range(0, 41, 1):
     mqlin[81 - i] = mq[nLinhas - 109 - i]
     yplin[i] = yp[109 + i]
     yplin[81 - i] = yp[nLinhas - 109 - i]
-print(yplin)
+# print(yplin)
 
 popt_linear, pcov_linear = scipy.optimize.curve_fit(linear, mqlin, yplin)
 
@@ -59,9 +59,35 @@ mq = np.arange(mq[0], mq[nLinhas - 1] - 0.1, 0.01)
 yp = f(mq)
 base = linear(mq, *popt_linear)
 
-picos, _ = scipy.signal.find_peaks(yp, height=100 - base, threshold=None, distance=50, width=1.5)
+picos, _ = scipy.signal.find_peaks(yp, height=100 - base, threshold=None, distance=40, width=5)
+print('array mq[picos]:\n')
+for i in range(0, len(picos), 1):
+    print("%0.16f" % (mq[picos[i]]))
 
-picos = np.delete(picos, [10])
+mq_picos = mq[picos]
+
+plt.figure(figsize=(4, 3))
+plt.title('Picos Espectro')
+plt.plot(mq, yp)
+plt.scatter(mq[picos], yp[picos], color='red', marker='+', label='Picos encontrados')
+plt.legend()
+plt.savefig("gau.png", format="png", dpi=1000)
+plt.show()
+
+del_ = input('Quais picos deseja deletar (colocar valor m/q separado por espaço)?\n')
+print()
+del_mq = list(map(float, del_.split(' ')))
+
+
+deletar = np.zeros(len(del_mq))
+for c in range(0, len(del_mq), 1):
+    for i, j in enumerate(mq_picos):
+        if j == del_mq[c]:
+            deletar[c] = i
+
+deletar = deletar.astype(int)
+
+picos = np.delete(picos, deletar)
 print(picos)
 print(mq[picos])
 print(yp[picos])
@@ -95,6 +121,8 @@ dire = right_ips.astype(int)
 sigma = (mq[dire] - mq[esq]) / 2 * np.sqrt(2 * np.log(2))
 cen = mq[picos]
 amp = yp[picos]
+print(sigma)
+print(mq[dire] - mq[esq])
 
 chute = np.zeros(3 * len(picos))
 boundinf = np.zeros(3 * len(picos))
@@ -105,14 +133,28 @@ while c < (3 * len(picos)) and i < len(picos):
     chute[c] = amp[i]
     chute[c + 1] = cen[i]
     chute[c + 2] = sigma[i]
-    boundinf[c] = -np.inf
+    boundinf[c] = 1 / 2 * amp[i]
     boundinf[c + 1] = cen[i] - 0.2
-    boundinf[c + 2] = -np.inf
-    boundsup[c] = np.inf
+    boundinf[c + 2] = 0
+    boundsup[c] = amp[i]
     boundsup[c + 1] = cen[i] + 0.2
-    boundsup[c + 2] = np.inf
+    boundsup[c + 2] = 3/2 * sigma[i]
     c += 3
     i += 1
+# corrigir picos 1 e 2
+for i in range(0, 6, 1):
+    boundinf[i] = 0
+    boundsup[i] = np.inf
+# corrigir pico 20
+boundsup[20] = 5 * sigma[6]
+
+# corriir pico 32 e 32.5
+for i in range(33, 39, 1):
+    boundinf[i] = 0
+    boundsup[i] = np.inf
+
+# corrigir pico 34
+boundsup[44] = 5 * sigma[14]
 
 popt2, pcov2 = scipy.optimize.curve_fit(gaussiana2, mq, yp, p0=chute,
                                         bounds=(boundinf, boundsup))
@@ -148,9 +190,21 @@ gs = gridspec.GridSpec(1, 1)
 ax1 = fig.add_subplot(gs[0])
 plt.plot(mq, yp)
 plt.plot(mq, gaussiana2(mq, *popt2), 'k--')
-pico_gauss = gaussiana1(mq, popt2[39], popt2[40], popt2[41])
-ax1.plot(mq, pico_gauss, "b")
-ax1.fill_between(mq, pico_gauss.min(), pico_gauss, facecolor="blue", alpha=0.5)
+pico_gauss1 = gaussiana1(mq, popt2[0], popt2[1], popt2[2])
+ax1.plot(mq, pico_gauss1, "g")
+ax1.fill_between(mq, pico_gauss1.min(), pico_gauss1, facecolor="green", alpha=0.5)
+pico_gauss2 = gaussiana1(mq, popt2[3], popt2[4], popt2[5])
+ax1.plot(mq, pico_gauss2, "r")
+ax1.fill_between(mq, pico_gauss2.min(), pico_gauss2, facecolor="red", alpha=0.5)
+pico_gauss32 = gaussiana1(mq, popt2[33], popt2[34], popt2[35])
+ax1.plot(mq, pico_gauss32, "r")
+ax1.fill_between(mq, pico_gauss32.min(), pico_gauss32, facecolor="red", alpha=0.5)
+pico_gauss33 = gaussiana1(mq, popt2[36], popt2[37], popt2[38])
+ax1.plot(mq, pico_gauss33, "y")
+ax1.fill_between(mq, pico_gauss33.min(), pico_gauss33, facecolor="yellow", alpha=0.5)
+pico_gauss34 = gaussiana1(mq, popt2[39], popt2[40], popt2[41])
+ax1.plot(mq, pico_gauss34, "b")
+ax1.fill_between(mq, pico_gauss34.min(), pico_gauss34, facecolor="blue", alpha=0.5)
 plt.xlabel("x: m/q", family="serif", fontsize=12)
 plt.ylabel("y: icounts", family="serif", fontsize=12)
 plt.tick_params(axis='both', which='major', direction="out", top="on", right="on", bottom="on", length=8, labelsize=8)
